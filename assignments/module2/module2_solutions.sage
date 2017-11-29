@@ -53,7 +53,7 @@ The returned value is the number of ways n can be split using the coin values in
     L = sorted(L, reverse = True)
 
     def helper(amount, lst):
-        if len(lst) == 0 and amount == 0:
+        if amount == 0:
             return 1
         elif len(lst) == 0:
             return 0
@@ -69,19 +69,72 @@ def m2p6(k):
 The input k should be a positive integer. The returned value is the number of
 different ways k can be written as a sum of at least two positive integers.
     '''
+    memo = {}
 
-    def helper(n):
-        if n <= 1:
+    def helper(left, max_number, D):
+        if left == 0:
+            #print(D)
+            return 1
+        elif max_number <= 0:
             return 0
-        
-    return -1
+        if left in memo:
+            if max_number in memo[left]:
+                #print("stored:", left, memo[left][max_number])
+                return memo[left][max_number]
+
+        c = 0
+        for i in range(0, left // max_number + 1):
+            D[max_number] = i
+            c += helper(left - i * max_number, max_number - 1, D)
+            del D[max_number]
+        if left not in memo:
+            memo[left] = {}
+        memo[left][max_number] = c
+        return c
+
+    D = {}
+    return helper(k, k - 1, D)
 
 def m2p7(k):
     '''Project Euler Problem 77.
 The input k should be a positive integer. The returned value is the smallest positive
 integer n such that the number of ways to write n as a sum of primes exceeds k
     '''
-    return -1
+    memo = {}
+
+    def helper(left, max_number, D, level):
+        if left == 0:
+            #print level * "  ", D
+            return 1
+        elif max_number <= 1:
+            return 0
+        #print level * "  ", "Calculating ...", left, max_number
+        if left in memo and max_number in memo[left]:
+            if memo[left][max_number] > 0:
+                #print level * "  ", "stored:", left, max_number, memo[left][max_number]
+                b = 5
+            return memo[left][max_number]
+
+        c = 0
+        for i in range(0, left // max_number + 1):
+            #print level * "  ", i
+            D[max_number] = i
+            c += helper(left - i * max_number, previous_prime(max_number) if max_number > 2 else 0, D, level + 1)
+            del D[max_number]
+        if left not in memo:
+            memo[left] = {}
+        #print level * "  ", "storing:", left, max_number, "=>", c
+        memo[left][max_number] = c
+        return c
+
+    D = {}
+    n = 0
+    i = 0
+    while n <= k:
+        i += 1
+        n = helper(i, previous_prime(i) if i > 2 else 0, D, 0)
+    return i
+
 
 def m2p8(k):
     '''Project Euler Problem 78.
