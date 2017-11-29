@@ -102,37 +102,27 @@ integer n such that the number of ways to write n as a sum of primes exceeds k
     '''
     memo = {}
 
-    def helper(left, max_number, D, level):
+    def helper(left, max_number):
         if left == 0:
-            #print level * "  ", D
             return 1
         elif max_number <= 1:
             return 0
-        #print level * "  ", "Calculating ...", left, max_number
         if left in memo and max_number in memo[left]:
-            if memo[left][max_number] > 0:
-                #print level * "  ", "stored:", left, max_number, memo[left][max_number]
-                b = 5
             return memo[left][max_number]
 
         c = 0
         for i in range(0, left // max_number + 1):
-            #print level * "  ", i
-            D[max_number] = i
-            c += helper(left - i * max_number, previous_prime(max_number) if max_number > 2 else 0, D, level + 1)
-            del D[max_number]
+            c += helper(left - i * max_number, previous_prime(max_number) if max_number > 2 else 0)
         if left not in memo:
             memo[left] = {}
-        #print level * "  ", "storing:", left, max_number, "=>", c
         memo[left][max_number] = c
         return c
 
-    D = {}
     n = 0
     i = 0
     while n <= k:
         i += 1
-        n = helper(i, previous_prime(i) if i > 2 else 0, D, 0)
+        n = helper(i, previous_prime(i) if i > 2 else 0)
     return i
 
 
