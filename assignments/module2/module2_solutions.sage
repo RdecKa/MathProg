@@ -27,9 +27,9 @@ def m2p3(n):
     '''Given a non-negative integer n calculate n-th Tribonacci number using memoization with a list, and without using recursion
     '''
     # Initializing a list to contain the values
-    T = [0,0,1] + [0]*(n-2)
+    T = [0, 0, 1] + [0] * (n - 2)
 
-    for i in range(3,n+1):
+    for i in xrange(3, n + 1):
         T[i] = T[i - 1] + T[i - 2] + T[i - 3]
     return T[n]
 
@@ -41,7 +41,7 @@ def m2p4(n):
 
     t3, t2, t1 = 1, 0, 0
 
-    for i in range(3, n+1):
+    for i in xrange(3, n + 1):
         t3, t2, t1 = t3 + t2 + t1, t3, t2
     return t3
 
@@ -58,7 +58,7 @@ The returned value is the number of ways n can be split using the coin values in
         elif len(lst) == 0:
             return 0
         c = 0
-        for i in range(0, amount // lst[0] + 1):
+        for i in xrange(0, amount // lst[0] + 1):
             c += helper(amount - i * lst[0], lst[1:] if len(lst) > 1 else [])
         return c
 
@@ -71,29 +71,24 @@ different ways k can be written as a sum of at least two positive integers.
     '''
     memo = {}
 
-    def helper(left, max_number, D):
+    def helper(left, max_number):
         if left == 0:
-            #print(D)
             return 1
         elif max_number <= 0:
             return 0
         if left in memo:
             if max_number in memo[left]:
-                #print("stored:", left, memo[left][max_number])
                 return memo[left][max_number]
 
         c = 0
-        for i in range(0, left // max_number + 1):
-            D[max_number] = i
-            c += helper(left - i * max_number, max_number - 1, D)
-            del D[max_number]
+        for i in xrange(0, left // max_number + 1):
+            c += helper(left - i * max_number, max_number - 1)
         if left not in memo:
             memo[left] = {}
         memo[left][max_number] = c
         return c
 
-    D = {}
-    return helper(k, k - 1, D)
+    return helper(k, k - 1)
 
 def m2p7(k):
     '''Project Euler Problem 77.
@@ -111,7 +106,7 @@ integer n such that the number of ways to write n as a sum of primes exceeds k
             return memo[left][max_number]
 
         c = 0
-        for i in range(0, left // max_number + 1):
+        for i in xrange(0, left // max_number + 1):
             c += helper(left - i * max_number, previous_prime(max_number) if max_number > 2 else 0)
         if left not in memo:
             memo[left] = {}
@@ -143,7 +138,7 @@ integer n such that number of ways n coins can be separated into piles is divisi
                 return memo_m2p8[left][max_number]
 
         c = 0
-        for i in range(0, left // max_number + 1):
+        for i in xrange(0, left // max_number + 1):
             c += helper(left - i * max_number, max_number - 1)
         if left not in memo_m2p8:
             memo_m2p8[left] = {}
