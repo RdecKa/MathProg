@@ -125,29 +125,29 @@ integer n such that the number of ways to write n as a sum of primes exceeds k
         n = helper(i, previous_prime(i) if i > 2 else 0)
     return i
 
+memo_m2p8 = {} # Cheating. I stores values from previous function runs.
 
 def m2p8(k):
     '''Project Euler Problem 78.
 The input k should be a positive integer. The returned value is the smallest positive
 integer n such that number of ways n coins can be separated into piles is divisible by k.
     '''
-    memo = {}
 
     def helper(left, max_number):
         if left == 0:
             return 1
         elif max_number <= 0:
             return 0
-        if left in memo:
-            if max_number in memo[left]:
-                return memo[left][max_number]
+        if left in memo_m2p8:
+            if max_number in memo_m2p8[left]:
+                return memo_m2p8[left][max_number]
 
         c = 0
         for i in range(0, left // max_number + 1):
             c += helper(left - i * max_number, max_number - 1)
-        if left not in memo:
-            memo[left] = {}
-        memo[left][max_number] = c
+        if left not in memo_m2p8:
+            memo_m2p8[left] = {}
+        memo_m2p8[left][max_number] = c
         return c
 
     n = -1
@@ -155,7 +155,6 @@ integer n such that number of ways n coins can be separated into piles is divisi
     while n < 0 or n % k != 0:
         i += 1
         n = helper(i, i - 1) + 1 # add one for one pile of all coins
-        #print i, n
     return i
 
 def m2p9(M):
