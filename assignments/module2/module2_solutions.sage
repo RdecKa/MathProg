@@ -155,6 +155,7 @@ integer n such that number of ways n coins can be separated into piles is divisi
     while n < 0 or n % k != 0:
         i += 1
         n = helper(i, i - 1) + 1 # add one for one pile of all coins
+        #print i, n
     return i
 
 def m2p9(M):
@@ -162,4 +163,18 @@ def m2p9(M):
 The input M should be an n x n matrix containing integers, given as a list of lists.
 The output is the minimal path sum, as defined on Project Euler.
     '''
-    return -1
+    num_rows = len(M)
+    num_columns = len(M[0])
+
+    for y in xrange(num_rows):
+        for x in xrange(num_columns):
+            if y == 0 and x == 0:
+                continue
+            if y == 0:
+                M[y][x] += M[y][x - 1]
+            elif x == 0:
+                M[y][x] += M[y - 1][x]
+            else:
+                M[y][x] += min(M[y - 1][x], M[y][x - 1])
+
+    return M[num_rows - 1][num_columns - 1]
