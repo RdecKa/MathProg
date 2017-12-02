@@ -179,7 +179,20 @@ def mAp5(n=7):
 def mAp6(n=7):
     '''Output 2 states which return to them selves after at most 5 iterations
     '''
-    return []
+    n = max(n, 3)
+
+    new_state1 = [[0 for i in xrange(n)] for j in xrange(n)]
+    center = n // 2
+    for i in range(center - 1, center + 2):
+        new_state1[center][i] = 1
+
+    new_state2 = [[0 for i in xrange(17)] for j in xrange(17)]
+    for i in [2, 7, 9, 14]:
+        for j in [4, 5, 6, 10, 11, 12]:
+            new_state2[i][j] = 1
+            new_state2[j][i] = 1
+
+    return [new_state1, new_state2]
 
 
 def mAp7(A, k):
