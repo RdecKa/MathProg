@@ -162,6 +162,7 @@ doing as little work as possible
 def mAp5(n=7):
     '''Output 10 different states which remain unchanged
     '''
+    n = max(n, 5) # Index out of bounds for smaller matrices
     L = []
     for i in xrange(10):
         new_state = [[0 for j in xrange(n)] for k in xrange(n)]
