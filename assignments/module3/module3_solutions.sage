@@ -32,7 +32,7 @@ of sites of interest, gridsize is a tuple giving the size of the grid and B is a
 integer giving the size of the buffer zone.
     '''
     #gridsize = (gridsize[1], gridsize[0])
-    grid = [[0 for x in range(gridsize[1])] for y in range(gridsize[0])]
+    grid = [[0 for x in range(gridsize[0])] for y in range(gridsize[1])]
     for y in range(gridsize[1]):
         for x in range(gridsize[0]):
             for site in sites:
@@ -58,7 +58,35 @@ def m3p6(n=7):
     '''Write a function m3p6() that outputs the optimal stackings for player one of Kuhn poker.
 Note that for testing purposes we need to be able to pass something as input. We use n=7.
     '''
-    return ['KQJ']
+    order = ['J', 'Q', 'K']
+
+    list_of_permutations = []
+    def perm(seq, cards, used):
+        if all(used):
+            list_of_permutations.append("J" + "".join(seq))
+            return
+        for i in range(len(cards)):
+            if not used[i]:
+                seq.append(cards[i])
+                used[i] = True
+                perm(seq, cards, used)
+                used[i] = False
+                del seq[-1]
+
+    def isOptimal(deck):
+        for i in range(0, len(deck) - 1, 2):
+            if order.index(deck[i]) < order.index(deck[i + 1]):
+                return False
+        return True
+
+    perm([], order, [True, False, False])
+
+    optimal = []
+    for deck in list_of_permutations:
+        if isOptimal(deck):
+            optimal.append(deck)
+
+    return optimal
 
 def m3p7(n=7):
     '''Write a function m3p7() that outputs the optimal stackings for player one
