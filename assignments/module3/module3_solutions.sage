@@ -74,9 +74,11 @@ Note that for testing purposes we need to be able to pass something as input. We
                 del seq[-1]
 
     def isOptimal(deck):
-        for i in range(0, len(deck) - 1, 2):
-            if order.index(deck[i]) < order.index(deck[i + 1]):
-                return False
+        for cut in range(len(deck)):
+            deck = deck[1:] + deck[0]
+            for i in range(0, len(deck) - 1, 2):
+                if order.index(deck[i]) < order.index(deck[i + 1]):
+                    return False
         return True
 
     perm([], order, [True, False, False])
