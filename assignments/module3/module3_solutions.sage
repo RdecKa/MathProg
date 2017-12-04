@@ -95,4 +95,41 @@ def m3p7(n=7):
 of K poker. Again, to avoid redundancy only list the cut of an optimal deck that starts with 2.
 Note that for testing purposes we need to be able to pass something as input. We use n=7.
     '''
-    return []
+    cards = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    def has_straight(hand):
+        # hand has 6 cards
+        return hand[:-1] == range(hand[0], hand[-2] + 1) or hand[1:] == range(hand[1], hand[-1] + 1)
+
+    def isOptimal(deck):
+        for _ in range(len(cards)):
+            deck = deck[1:] + deck[0:1]
+            player1 = sorted(deck[0:1] + deck[2:3] + deck[4:8])
+            player2 = sorted(deck[1:2] + deck[3:8])
+
+            player1_straight = has_straight(player1)
+            player2_straight = has_straight(player2)
+
+            # if player2 has a straight but player1 doesn't we lose
+            if (player2_straight and not player1_straight):
+                return False
+
+            # if player1 has a straight but player2 doesn't, we don't necessarily lose
+            if player1_straight and not player2_straight:
+                continue
+
+            # if noone (or both) has a straight, check highest card
+            i = len(player1) - 1
+            while player2[i] == player1[i]:
+                i -= 1
+            if player2[i] > player1[i]:
+                return False
+        return True
+
+    L = []
+    perms = CyclicPermutations(cards)
+
+    for perm in perms:
+        if isOptimal(perm):
+            L.append(perm)
+    return L
