@@ -17,7 +17,6 @@ def return_neighbours(A, c, shape='rectangle', coordinates=False):
 
     l = []
     if shape == 'rectangle':
-
         for i in xrange(max(0, c[0] - 1), min(m, c[0] + 2)):
             for j in xrange(max(0, c[1] - 1), min(n, c[1] + 2)):
                 if (i, j) == c:
@@ -76,11 +75,11 @@ def mAp2(A, shape='rectangle'):
     return A_new
 
 
-def mAp3(A, k):
+def mAp3(A, k, shape='rectangle'):
     '''Output the state of the matrix after k iterations
     '''
     for i in xrange(k):
-        A = mAp2(A)
+        A = mAp2(A, shape)
     return A
 
 def xor_matrix(A, B):
