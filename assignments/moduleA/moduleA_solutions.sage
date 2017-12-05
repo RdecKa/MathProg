@@ -53,10 +53,10 @@ def return_neighbours(A, c, shape='rectangle', coordinates=False):
     return [x[0] for x in l if not (x in added or added_add(x))]
 
 
-def mAp1(A, c):
+def mAp1(A, c, shape='rectangle'):
     '''Output the state of the cell after one iteration
     '''
-    num_neighbours_alive = sum(return_neighbours(A, c))
+    num_neighbours_alive = sum(return_neighbours(A, c), shape=shape)
     if (num_neighbours_alive <= 1 or num_neighbours_alive >= 4):
         return 0
     if (num_neighbours_alive == 2):
@@ -66,13 +66,13 @@ def mAp1(A, c):
     return -1
 
 
-def mAp2(A):
+def mAp2(A, shape='rectangle'):
     '''Output the state of the matrix after one iteration
     '''
     A_new = [[0 for i in xrange(len(A[0]))] for i in xrange(len(A))]
     for i in xrange(len(A_new)):
         for j in xrange(len(A_new[i])):
-            A_new[i][j] = mAp1(A, (i, j))
+            A_new[i][j] = mAp1(A, (i, j), shape=shape)
     return A_new
 
 
@@ -83,71 +83,48 @@ def mAp3(A, k):
         A = mAp2(A)
     return A
 
+def xor_matrix(A, B):
+    n, m = len(A), len(B[0])
+
+    #assert (n, m) == (len(B), len(B[0])) # dimensions have to be the same
+
+    xor = [[A[i][j] != B[i][j] for j in xrange(m)] for i in xrange(n)]
+
+    return xor
+
+def update_neighbours(A, A_old, A_u, neighbours, shape='rectangle'):
+    for n in neighbours:
+        i, j = n[1]
+        if not A_u[i][j]:
+            A[i][j] = mAp1(A_old, (i, j), shape=shape)
+            A_u[i][j] = true
 
 def better_iteration(A, k, shape='rectangle', debug=False):
-    if k < 1:
+
+    if k == 0:
         return A
-    if k == 1:
-        return mAp2(A)
-    n = len(A)
-    m = len(A[0])
 
-    A_n = mAp2(A)
 
-    # matrix that indicates changed cells
-    A_c = [[[A[i][j] != A_n[i][j]
-            for j in xrange(len(A[0]))] for i in xrange(len(A))], [[False for j in xrange(len(A[0]))] for i in xrange(len(A))]]
+    n, m = len(A), len(A[0]) # dimensions, A \in {0,1}^(n x m)
 
-    if debug:
-        print("Change Matrix:")
-        pretty_print(matrix(A_c[0]))
+    A_n = mAp2(A, shape) # new matrix
+    k = k - 1 # first iteration
 
-        print("Iteration 1")
-        pretty_print(matrix(A_n))
+    A_c = xor_matrix(A, A_n) # indicates changed fields
+    A_u = [[false for i in xrange(m)] for j in xrange(n)] # indicates updated fields
 
-    for l in xrange(k - 1):
-        updated = False
-        #A_tmp = [[0 for i in xrange(len(A[0]))] for i in xrange(len(A))]
-        A_tmp = copy(A_n)
-        for i in xrange(len(A)):
-            for j in xrange(len(A[0])):
-                if A_c[0][i][j]: #if change at i, j
-                    neighbours = return_neighbours(
-                        A_n, (i, j), shape=shape, coordinates=True) #get neighbours
-                    if debug:
-                        print i, j, neighbours
-                    for _, (x, y) in neighbours: #for every neighbour
-                        if not A_c[1][x][y]: #that is not updated
-                            A_tmp[x][y] = mAp1(A_n, (x, y)) #update
-                            if debug:
-                                print "update", x, y, A_tmp[x][y]
-                            A_c[1][x][y] = True # set to updated
-                    if not A_c[1][i][j]:
-                        A_tmp[i][j] = mAp1(A_n, (i, j))
-                        A_c[1][i][j] = True
-                else:
-                    #A_tmp[i][j] = A_n[i][j]
-                    pass
+    while k > 0:
+        A_tmp = deepcopy(A_n)
 
-        if debug:
-            print("Update Matrix:")
-            pretty_print(matrix(A_c[1]))
-
-        A_c = [[[A_tmp[i][j] != A_n[i][j]
-            for j in xrange(len(A[0]))] for i in xrange(len(A))], [[False for j in xrange(len(A[0]))] for i in xrange(len(A))]]
-        #A_c[1] = [[False for j in xrange(len(A[0]))] for i in xrange(len(A))]
-
-        if debug:
-            print("Iteration: %d" % (l + 2))
-            pretty_print(matrix(A_tmp))
-            print("Should be:")
-            pretty_print(matrix(mAp3(A, l + 2)))
-            print("Change Matrix:")
-            pretty_print(matrix(A_c[0]))
-
+        for i in xrange(n):
+            for j in xrange(m):
+                if A_c[i][j]: # flied (i, j) has changed
+                    neighbours = return_neighbours(A_n, (i,j), shape=shape, coordinates=True)
+                    update_neighbours(A_tmp, A_n, A_u, neighbours, shape=shape)
+        A_c = xor_matrix(A_n, A_tmp)
         A_n = A_tmp
-
-
+        A_u = [[false for i in xrange(m)] for j in xrange(n)]
+        k = k - 1
 
     return A_n
 
@@ -156,7 +133,7 @@ def mAp4(A, k):
     '''Output the state of the matrix after k iterations,
 doing as little work as possible
     '''
-    return better_iteration(A, k, debug=True)
+    return better_iteration(A, k, debug=False)
 
 
 def mAp5(n=7):
