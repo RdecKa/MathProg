@@ -47,6 +47,7 @@ def return_neighbours(A, c, shape='rectangle', coordinates=False):
     # remove duplicates from the list
     added = set()
     added_add = added.add
+
     if coordinates:
         return [x for x in l if not (x in added or added_add(x))]
     return [x[0] for x in l if not (x in added or added_add(x))]
@@ -55,7 +56,7 @@ def return_neighbours(A, c, shape='rectangle', coordinates=False):
 def mAp1(A, c, shape='rectangle'):
     '''Output the state of the cell after one iteration
     '''
-    num_neighbours_alive = sum(return_neighbours(A, c), shape=shape)
+    num_neighbours_alive = sum(return_neighbours(A, c, shape=shape), shape=shape)
     if (num_neighbours_alive <= 1 or num_neighbours_alive >= 4):
         return 0
     if (num_neighbours_alive == 2):
