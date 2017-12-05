@@ -52,18 +52,47 @@ def m4p7(p):
 def m4p4(p, cl):
     '''Input True if the permutation p contains the classical pattern cl
     '''
-    return None
+
+    def check_pattern(a, b):
+        return m4p7(a) == b
+
+    cl_std = m4p7(cl)
+    n, q = len(p), len(cl)
+
+    for i in Subsets(xrange(n), q):
+        if check_pattern([p[x] for x in i], cl_std):
+            return True
+
+    return False
 
 def m4p5(p):
     '''Return the permutation after one pass with bubble-sort
     '''
-    return []
+    for i in xrange(len(p) - 1):
+        if p[i] > p[i + 1]:
+            p[i], p[i + 1] = p[i + 1], p[i]
+    return p
+
+def m4p4_list(p, M):
+    return any(m4p4(p, cl) for cl in M)
+
+def av(M, n):
+    return [p for p in Permutations(n) if not m4p4_list(list(p),M)]
+
+def bubble_sortable(n):
+    return [p for p in Permutations(n) if m4p5(list(p)) == range(1,len(p)+1)]
+
 
 def m4p6(n=7):
     '''Return the correct classical patterns
     '''
-    return []
-
+    p_len = 1
+    while True:
+        for q_len in xrange(1, p_len + 1):
+            for p in Permutations(xrange(1, p_len + 1)):
+                for q in Permutations(xrange(1, q_len + 1)):
+                    if bubble_sortable(p_len) == av([p, q], p_len):
+                        return [p, q] if len(p) > len(q) and True else [q, p]
 
 
 def m4p8(L):
