@@ -14,6 +14,7 @@ def m3p1(L):
     x = float(round(x_sum / len(L), 2))
     y = float(round(y_sum / len(L), 2))
     return (x, y)
+    # SHORTER: return (sum(p[0] for p in L) / len(L), sum(p[1] for p in L))
 
 def m3p2(p,q):
     '''Calculate the Euclidean distance between p and q. As a float rounded to 2 decimal places
