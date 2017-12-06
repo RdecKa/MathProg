@@ -52,6 +52,8 @@ def m4p7(p):
 def m4p4(p, cl):
     '''Input True if the permutation p contains the classical pattern cl
     '''
+    if len(cl) > len(p):
+        return False
 
     def check_pattern(a, b):
         return m4p7(a) == b
@@ -98,5 +100,23 @@ def m4p6(n=7):
 def m4p8(L):
     '''Return the classical patterns the permutaions in L avoid, if possible. Otherwise False
     '''
-    return []
+    if L == []:
+        return [1]
+
+    avoid_patterns = []
+    max_len = len(L[len(L) - 1])
+
+    for i in xrange(2, max_len):
+        for pattern in Permutations(xrange(1, i + 1)):
+            if any(m4p4(pattern, l) for l in avoid_patterns):
+                continue
+            if not any(m4p4(l, pattern) for l in L):
+                avoid_patterns.append(pattern)
+
+    if len(avoid_patterns) == 0:
+        return False
+    return avoid_patterns
+
+
+
 
