@@ -82,7 +82,6 @@ def av(M, n):
 def bubble_sortable(n):
     return [p for p in Permutations(n) if m4p5(list(p)) == range(1,len(p)+1)]
 
-
 def m4p6(n=7):
     '''Return the correct classical patterns
     '''
@@ -92,7 +91,8 @@ def m4p6(n=7):
             for p in Permutations(xrange(1, p_len + 1)):
                 for q in Permutations(xrange(1, q_len + 1)):
                     if bubble_sortable(p_len) == av([p, q], p_len):
-                        return [p, q] if len(p) > len(q) and True else [q, p]
+                        return [min(p, q), max(p, q)]
+        p_len += 1
 
 
 def m4p8(L):
