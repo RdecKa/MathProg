@@ -27,7 +27,7 @@ def return_neighbours(A, c, shape='rectangle', coordinates=False):
     elif shape == 'torus':
         for i in xrange(c[0] - 1, c[0] + 2):
             for j in xrange(c[1] - 1, c[1] + 2):
-                if (i, j) == c:
+                if (i % m, j % n) == c:
                     continue
                 else:
                     l.append((A[i % m][j % n], (i % m, j % n)))
@@ -35,11 +35,11 @@ def return_neighbours(A, c, shape='rectangle', coordinates=False):
     elif shape == 'klein_bottle':
         for i in xrange(c[0] - 1, c[0] + 2):
             for j in xrange(c[1] - 1, c[1] + 2):
-                if (i, j) == c:
+                i1 = i % m
+                j1 = (n - 1 - j) % n if i >= m or i == -1 else j % n
+                if (i1, j1) == c:
                     continue
                 else:
-                    i1 = i % m
-                    j1 = (n - 1 - j) % n if i >= m or i == -1 else j % n
                     l.append((A[i1][j1], (i1, j1)))
     else:
         raise ValueError('%s is not a valid shape!' % shape)
@@ -56,7 +56,10 @@ def return_neighbours(A, c, shape='rectangle', coordinates=False):
 def mAp1(A, c, shape='rectangle'):
     '''Output the state of the cell after one iteration
     '''
-    num_neighbours_alive = sum(return_neighbours(A, c, shape=shape), shape=shape)
+    neighbours = return_neighbours(A, c, shape=shape)
+    neighbours_debug = return_neighbours(A, c, shape=shape, coordinates=True)
+    #print c, "=>", neighbours_debug
+    num_neighbours_alive = sum(neighbours)
     if (num_neighbours_alive <= 1 or num_neighbours_alive >= 4):
         return 0
     if (num_neighbours_alive == 2):
@@ -123,7 +126,9 @@ def better_iteration(A, k, shape='rectangle', debug=False):
                     update_neighbours(A_tmp, A_n, A_u, neighbours, shape=shape)
         A_c = xor_matrix(A_n, A_tmp)
         A_n = A_tmp
-        A_u = [[false for i in xrange(m)] for j in xrange(n)]
+        if not any([i for j in A_c for i in j]):
+            break
+        A_u = [[False for i in xrange(m)] for j in xrange(n)]
         k = k - 1
 
     return A_n
