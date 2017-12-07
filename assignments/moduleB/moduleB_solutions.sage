@@ -153,10 +153,50 @@ def mBp1(perm, mp):
     return False
 
 
+def S(perm):
+    if len(perm) <= 1:
+        return perm
+
+    m = max(perm)
+    mi = perm.index(m)
+
+    return S(perm[:mi])+S(perm[mi+1:])+[m]
+
+def mBp1_list(p, M):
+    return any(mBp1(p, cl) for cl in M)
+
+def av(M, n):
+    return [p for p in Permutations(n) if not mBp1_list(list(p),M)]
+
+def west_2_stack_sortable(n):
+    return [p for p in Permutations(n) if S(S(list(p))) == range(1,len(p)+1)]
+
 def mBp2():
     '''Output a list of patterns [p,q] such that Av(p,q) = permutations perm such that S(S(perm)) is fully sorted
     '''
-    return []
+
+    def check_S_4(p, q):
+        if west_2_stack_sortable(4) == av([[p, []], [q, []]], 4):
+            return True
+        return False
+
+    def check_S_5(p, q):
+        if west_2_stack_sortable(5) == av([p, q], 5):
+            return True
+        return False
+
+    # permutations with length 3 are always stack sortable, pattern has to be of length 4
+    # mesh pattern has to be testet on permutations of length 5
+
+    # p is a classical pattern, q is a mesh pattern
+    for p in Permutations(xrange(1, 5)):
+        for q in Permutations(xrange(1, 5)):
+            if check_S_4(p, q):
+                for a in xrange(5):
+                    for b in xrange(5):
+                        if check_S_5([p, []], [q, [(a, b)]]):
+                            return [p, [q, [(a, b)]]]
+
 
 def mBp3(perm):
     '''Return the pair of Young tableaux that correspond to perm
