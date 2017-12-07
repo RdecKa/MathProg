@@ -201,7 +201,27 @@ def mBp2():
 def mBp3(perm):
     '''Return the pair of Young tableaux that correspond to perm
     '''
-    return [[]]
+    t1 = [[]]
+    t2 = [[]]
+    c = 1
+    for num in perm:
+        i = 0
+        while i < len(t1):
+            for j in range(len(t1[i])):
+                if num < t1[i][j]:
+                    num, t1[i][j] = t1[i][j], num
+                    i += 1
+                    break
+            else:
+                t1[i].append(num)
+                t2[i].append(c)
+                c += 1
+                break
+        else:
+            t1.append([num])
+            t2.append([c])
+            c += 1
+    return (t1, t2)
 
 def mBp4():
     '''Output a pattern p such that Av(p) = permutations whose Young tableaux have at most three cells in the first row
