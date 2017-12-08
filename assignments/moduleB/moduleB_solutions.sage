@@ -33,14 +33,42 @@ class Catalan(SageObject):
         The image of self under the canonical bijection
         induced by the class of self and cls
         """
-        pass
+
+        if self.is_neutral():
+            return cls(cls.neutral_element)
+
+        (a, b) = self.decons()
+        a = a.map_to(cls)
+        b = b.map_to(cls)
+        return a.cons(b)
 
     @classmethod
     def structures(cls, n):
         """
         Generates all structures of size n
         """
-        pass
+        if cls is Dyck:
+            if n % 2 != 0:
+                return None
+            n /= 2
+        #print "start structure of", cls
+        l = [[] for i in xrange(n + 1)]
+        l[0].append(cls(cls.neutral_element))
+
+        for perm_len in xrange(1, n + 1):
+            #print "length of current permutation:", perm_len
+            for i in xrange(perm_len):
+                current_perms1 = l[i] #perms of length i
+                current_perms2 = l[perm_len - i - 1] #perms of length n - i
+                #print "current perms:", current_perms1, " --- ", current_perms2
+                for a in current_perms1:
+                    for b in current_perms2:
+                        l[perm_len].append(a.cons(b))
+                #print i, l[perm_len]
+
+        #print "end structure of", cls
+        return l[n]
+
 
 
 class Av132(Catalan):
@@ -92,14 +120,33 @@ class Dyck(Catalan):
         Constructs a Dyck path from
         the Dyck paths self and other
         """
-        pass
+
+        if other is None:
+            return self
+
+        l = self.obj
+        k = other.obj
+
+        return Dyck([1] + l + [0] + k)
+
     def decons(self):
         """
         Deconstructs the Dyck path self
         into two Dyck paths:
         ’decons’ is the inverse of ’cons’
         """
-        pass
+        l = self.obj
+
+        if len(l) < 2:
+            return (Dyck([]), Dyck([]))
+
+        counter = 1
+        index = 1
+        while counter > 0:
+            counter += 1 if l[index] else -1
+            index += 1
+
+        return (Dyck(l[1:index - 1]) ,Dyck(l[index:]))
 
 
 def to_standard(p):
@@ -317,20 +364,20 @@ def mBp8(avperm1, avperm2):
 def mBp9(dyck1, dyck2):
     '''Return the gluing of dyck1 and dyck2
     '''
-    return Dyck([])
+    return dyck1.cons(dyck2)
 
 def mBp10(dyck):
     '''Return the decomposition of dyck
     '''
-    return (Dyck([]), Dyck([]))
+    return dyck.decons()
 
 def mBp11(n):
     '''Return the 132-avoiding permutations of length n
     '''
-    return []
+    return Av132.structures(n)
 
 def mBp12(avperm):
     '''Return the Dyck-path that corresponds to avperm
     '''
-    return Dyck([])
+    return avperm.map_to(Dyck)
 
