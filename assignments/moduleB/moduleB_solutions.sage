@@ -54,7 +54,16 @@ class Av132(Catalan):
         Constructs a 132-avoiding permutation from
         the 132-avoiding permutations self and other
         """
-        pass
+        if other is None:
+            return self
+
+        l = self.obj
+        k = other.obj
+
+        m = len(l) + len(k) + 1
+
+        return Av132([x + len(k) for x in l] + [m] + k)
+
 
     def decons(self):
         """
@@ -63,6 +72,10 @@ class Av132(Catalan):
         ’decons’ is the inverse of ’cons’
         """
         l = self.obj
+
+        if len(l) == 0:
+            return (Av132([]), Av132([]))
+
         m = max(l)
         mi = l.index(m)
 
@@ -299,7 +312,7 @@ def mBp7(avperm):
 def mBp8(avperm1, avperm2):
     '''Return the gluing of avperm1 and avperm2
     '''
-    return Av132([])
+    return avperm1.cons(avperm2)
 
 def mBp9(dyck1, dyck2):
     '''Return the gluing of dyck1 and dyck2
