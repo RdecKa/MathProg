@@ -62,7 +62,11 @@ class Av132(Catalan):
         into two 132-avoiding permutations:
         ’decons’ is the inverse of ’cons’
         """
-        pass
+        l = self.obj
+        m = max(l)
+        mi = l.index(m)
+
+        return (Av132([x - len(l[mi + 1:]) for x in l[:mi]]), Av132(l[mi + 1:]))
 
 
 class Dyck(Catalan):
@@ -223,15 +227,64 @@ def mBp3(perm):
             c += 1
     return (t1, t2)
 
+def check_cl(p, cl):
+    '''Outputs True if the permutation p contains the classical pattern cl
+    '''
+    if len(cl) > len(p):
+        return False
+
+    def check_pattern(a, b):
+        return to_standard(a) == b
+
+    cl_std = to_standard(cl)
+    n, q = len(p), len(cl)
+
+    for i in Subsets(xrange(n), q):
+        if check_pattern([p[x] for x in i], cl_std):
+            return True
+
+    return False
+
+def check_cl_list(p, M):
+    return any(check_cl(p, cl) for cl in M)
+
+def av_cl(M, n):
+    return [p for p in Permutations(n) if not check_cl_list(list(p),M)]
+
 def mBp4():
     '''Output a pattern p such that Av(p) = permutations whose Young tableaux have at most three cells in the first row
     '''
-    return []
+
+    def check_tableau(t):
+        '''Check if the first row of the given young tableau has 3 cells at a maximum
+        '''
+        return len(t[0]) <= 3
+
+    n = 4
+    while True:
+        for clp in Permutations(xrange(1, n + 1)): # for all classical patterns of length n
+            av_set = av([[clp, []]], n + 2) # magic number n + 2, does this work?
+            if all(check_tableau(mBp3(t)[0]) for t in av_set):
+                return clp
+        n += 1
+    return False
 
 def mBp5():
     '''Output a pattern p such that Av(p) = permutations whose Young tableaux have at most three cells in the first column
     '''
-    return []
+    def check_tableau(t):
+        '''Check if the first column of the given young tableau has 3 cells at a maximum
+        '''
+        return len(t) <= 3
+
+    n = 4
+    while True:
+        for clp in Permutations(xrange(1, n + 1)): # for all classical patterns of length n
+            av_set = av_cl([clp], n + 1) # magic number n + 1, does this work?
+            if all(check_tableau(mBp3(t)[0]) for t in av_set):
+                return clp
+        n += 1
+    return False
 
 def mBp6():
     '''Output a pattern p such that Av(p) = permutations whose Young tableaux is hook-shaped
@@ -241,7 +294,7 @@ def mBp6():
 def mBp7(avperm):
     '''Return the decomposition of avperm
     '''
-    return (Av132([]), Av132([]))
+    return avperm.decons()
 
 def mBp8(avperm1, avperm2):
     '''Return the gluing of avperm1 and avperm2
