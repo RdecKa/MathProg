@@ -10,23 +10,17 @@ def m5p1(G):
     p = MixedIntegerLinearProgram()
     v = p.new_variable(binary = True)
 
-    #print G.keys()
-    #print sum(v[i] for i in G.keys())
-
     p.set_objective(sum(v[i] for i in G.keys()))
 
-    #for s in Subsets(range(len(G.keys()))):
-        #print s
-        #p.add_constraint(sum(1 if all(G[el].intersection(s - el) == (s - el) for el in s) else 0) == s.cardinality())
-        #p.add_constraint(sum([1 if all(v[i] for el in s) else 0]) == s.cardinality())
-        #p.add_constraint()
+    n = len(G)
+    for i, j in [(k, l) for k in xrange(n) for l in xrange(k + 1, n)]:
+        if i in G[j]:
+            continue
+        p.add_constraint(v[i] + v[j] <= 1)
 
     p.solve()
 
-    for el in G.keys():
-        print p.get_values(v[el])
-
-    return -1
+    return Integer(sum([p.get_values(v[i]) for i in xrange(n)]))
 
 def m5p2(G):
     '''Return the size of the largest independent set
