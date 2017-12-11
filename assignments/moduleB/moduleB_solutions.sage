@@ -51,22 +51,17 @@ class Catalan(SageObject):
             if n % 2 != 0:
                 return None
             n /= 2
-        #print "start structure of", cls
         l = [[] for i in xrange(n + 1)]
         l[0].append(cls(cls.neutral_element))
 
         for perm_len in xrange(1, n + 1):
-            #print "length of current permutation:", perm_len
             for i in xrange(perm_len):
                 current_perms1 = l[i] #perms of length i
                 current_perms2 = l[perm_len - i - 1] #perms of length n - i
-                #print "current perms:", current_perms1, " --- ", current_perms2
                 for a in current_perms1:
                     for b in current_perms2:
                         l[perm_len].append(a.cons(b))
-                #print i, l[perm_len]
 
-        #print "end structure of", cls
         return l[n]
 
 
