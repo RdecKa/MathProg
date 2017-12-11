@@ -60,25 +60,73 @@ def m5p3(U, S):
 def m5p4(xmin, xmax, ymin, ymax):
     '''Return a lambda function for the square bounded by xmin-xmax and ymin-ymax
     '''
-    return lambda px, py: True
+    return lambda px, py:  bool(xmin <= px <= xmax and ymin <= py <= ymax)
 
 def m5p5(x0, y0, r):
     '''Return a lambda function for the square with center (x0, y0) and side length 2r
     '''
-    return lambda px, py: True
+    return lambda px, py:  bool(x0 - r <= px <= x0 + r and y0 - r <= py <= y0 + r)
 
 def m5p6(x0, y0, r):
     '''Return a lambda function for the disc with center (x0, y0) and radius r
     '''
-    return lambda px, py: True
+    return lambda px, py: bool(((x0 - px)**2 + (y0 - py)**2) <= r**2)
 
-def m5p7((a0, b0, r), n=1000, xmin=-1, xmax=1, ymin=-1, ymax=1):
+# Functions for problem 7
+
+def hits(P, n=10000, xmin=-1, xmax=1, ymin=-1, ymax=1):
+    out = []
+    for i in xrange(n):
+        x = random() * (xmax - xmin) + xmin
+        y = random() * (ymax - ymin) + ymin
+
+        if P(x, y):
+            out.append((x, y))
+
+    return out
+
+def draw(shape):
+    D = shape
+    R = points(hits(D))
+    R.show()
+
+def area_approx(P, n = 10000, xmin = -1, xmax = 1, ymin = -1, ymax = 1):
+    square = (xmax - xmin) * (ymax - ymin)
+    return len(hits(P, n, xmin, xmax, ymin, ymax)) / n * square
+
+def m5p7((a0, b0, r), n=10000, xmin=-1, xmax=1, ymin=-1, ymax=1):
     '''Return an approximation of the area covered by P (a disc) inside the rectangle
     '''
-    return -1
+    P = m5p6(a0, b0, r)
+    area = area_approx(P, n, xmin, xmax, ymin, ymax)
+    return float(round(area, 1))
 
-def m5p8(f, n=1000, xmin=-1, xmax=1, ymin=-1, ymax=1, zmax=1):
+# Functions for problem 8
+
+def is_below(f, (x, y, z)):
+    return z <= f(x, y)
+
+def count3D(P, n=10000, xmin=-1, xmax=1, ymin=-1, ymax=1, zmax=1):
+    count = 0
+    for i in xrange(n):
+        x = random() * (xmax - xmin) + xmin
+        y = random() * (ymax - ymin) + ymin
+        z = random() * zmax
+
+        if is_below(P, (x, y, z)):
+            count += 1
+
+    #points(out).show()
+
+    return count
+
+def volume_approx(f, n=10000, xmin=-1, xmax=1, ymin=-1, ymax=1, zmax=1):
+    vol = (xmax - xmin) * (ymax - ymin) * zmax
+    return count3D(f, n, xmin, xmax, ymin, ymax, zmax) / n * vol
+
+def m5p8(f, n=10000, xmin=-1, xmax=1, ymin=-1, ymax=1, zmax=1):
     '''Return an approximation of the volume between the function and the xy-plane
     '''
-    return -1
+    v = volume_approx(f, n, xmin, xmax, ymin, ymax, zmax)
+    return float(round(v, 0))
 
