@@ -7,6 +7,25 @@ userids = ['karin17', 'andreas17'] # fill in this array with strings of username
 def m5p1(G):
     '''Return the size of the largest clique
     '''
+    p = MixedIntegerLinearProgram()
+    v = p.new_variable(binary = True)
+
+    #print G.keys()
+    #print sum(v[i] for i in G.keys())
+
+    p.set_objective(sum(v[i] for i in G.keys()))
+
+    #for s in Subsets(range(len(G.keys()))):
+        #print s
+        #p.add_constraint(sum(1 if all(G[el].intersection(s - el) == (s - el) for el in s) else 0) == s.cardinality())
+        #p.add_constraint(sum([1 if all(v[i] for el in s) else 0]) == s.cardinality())
+        #p.add_constraint()
+
+    p.solve()
+
+    for el in G.keys():
+        print p.get_values(v[el])
+
     return -1
 
 def m5p2(G):
@@ -17,7 +36,18 @@ def m5p2(G):
 def m5p3(U, S):
     '''Return the lowest number of subsets from S to cover U
     '''
-    return -1
+    p = MixedIntegerLinearProgram()
+    v = p.new_variable(binary = True)
+
+    p.set_objective(-sum(v[s] for s in xrange(len(S))))
+
+    lst = [[v[j] if U[i] in S[j] else 0 for i in xrange(len(U))] for j in xrange(len(S))]
+
+    for i in xrange(len(U)):
+        p.add_constraint(sum([lst[j][i] for j in xrange(len(S))]) >= 1)
+
+    p.solve()
+    return Integer(sum([p.get_values(v[i]) for i in xrange(len(S))]))
 
 def m5p4(xmin, xmax, ymin, ymax):
     '''Return a lambda function for the square bounded by xmin-xmax and ymin-ymax
