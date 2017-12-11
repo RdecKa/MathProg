@@ -13,9 +13,10 @@ def m5p1(G):
     p.set_objective(sum(v[i] for i in G.keys()))
 
     n = len(G)
-    for i, j in [(k, l) for k in xrange(n) for l in xrange(k + 1, n)]:
-        if i in G[j]:
+    for i, j in [(k, l) for k in xrange(n) for l in xrange(k + 1, n)]: # edge i <-> j
+        if i in G[j]: # if edge exists
             continue
+        # edge does not exists, at most one of vertices is in the clique
         p.add_constraint(v[i] + v[j] <= 1)
 
     p.solve()
@@ -25,7 +26,20 @@ def m5p1(G):
 def m5p2(G):
     '''Return the size of the largest independent set
     '''
-    return -1
+    p = MixedIntegerLinearProgram()
+    v = p.new_variable(binary = True)
+
+    p.set_objective(sum(v[i] for i in G.keys()))
+
+    n = len(G)
+    for i, j in [(k, l) for k in xrange(n) for l in xrange(k + 1, n)]:
+        if i in G[j]:
+            # if two vertices are connected, at most one can be in the independent set
+            p.add_constraint(v[i] + v[j] <= 1)
+
+    p.solve()
+
+    return Integer(sum([p.get_values(v[i]) for i in xrange(n)]))
 
 def m5p3(U, S):
     '''Return the lowest number of subsets from S to cover U
