@@ -58,18 +58,60 @@ def mCp5(x, y):
     B = matrix(QQ, Integer(sqrt(len(y))), y)
     return (A - B).rank()
 
+
+def nn(p, N):
+    min_dst = infinity
+    min_l = infinity
+    index = 0
+    for (i, (n, l)) in enumerate(N):
+        dst = mCp3(p, n)
+        if dst < min_dst:
+            min_dst = dst
+            min_l = l
+            index = i
+        elif dst == min_dst and l < min_l:
+            min_l = l
+            index = i
+
+    return N[index]
+
 def mCp6(L):
     '''Check whether L satisfies the axiom of neighborliness w.r.t the Hamming distance
     '''
-    return None
+
+    for p, l in L:
+        N = list(L)
+        N.remove((p, l))
+        if l != nn(p, N)[1]:
+            return False
+
+    return True
 
 def mCp7(L, J):
     '''Use the labeled points in L to label the points in J using the nearest neighbor in the Hamming distance
     '''
-    return []
+    labled = []
+
+    for j in J:
+        labled.append((j, nn(j, L)[1]))
+
+    return labled
 
 def mCp8(L, J, k):
     '''Use the labeled points in L to label the points in J using the k nearest neighbors in the Hamming distance
     '''
-    return []
+
+    k = min(k, len(L))
+    labled = []
+    for j in J:
+        knn = []
+        n_list = list(L)
+        for _ in xrange(k):
+            n = nn(j, n_list)
+            knn.append(n[1])
+            n_list.remove(n)
+
+        labled.append((j, max(set(knn), key=knn.count)))
+
+    return labled
 
